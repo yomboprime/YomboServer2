@@ -39,11 +39,10 @@ var peerServer = null;
 //var onClientConnectedInternal = null;
 //var onClientDisconnectedInternal = null;
 
-function startServer( listenPort, onStarted ) {
+function startServer( listenPort, password, onStarted ) {
 
 	// Create server
 	app = express();
-	//server = http.Server( app );
 
 	//wss = new WebSocket.Server( { server: server } );
 
@@ -66,8 +65,6 @@ function startServer( listenPort, onStarted ) {
 	//onClientMessageInternal = onClientMessage1;
 
 	// Start listening
-	//server.listen( listenPort, onStarted );
-
 	server = app.listen( listenPort, function () {
 
 		onStarted( app, server );
@@ -77,12 +74,10 @@ function startServer( listenPort, onStarted ) {
 	peerServer = ExpressPeerServer( server, {
 		debug: false,
 		path: '/stunserver',
-		key: process.env.SECRET
+		key: password
 	} );
 
-	app.use('/peer', peerServer);
-
-//	server.listen( listenPort );
+	app.use( '/peer', peerServer );
 
 }
 

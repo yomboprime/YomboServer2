@@ -43,12 +43,13 @@ function initServer() {
 	} );
 
 	if ( ! process.env.SECRET ) process.env.SECRET = "abcd";
+	if ( ! process.env.PORT ) process.env.PORT = 8080;
 
 //	connectVideoProcess();
 
 //	connectAudioProcess();
 
-	webrtcserver.startServer( 8080/*process.env.PORT*/, function () {
+	webrtcserver.startServer( process.env.PORT, process.env.SECRET, function () {
 
 		console.log( "Server started." );
 

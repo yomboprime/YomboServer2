@@ -8,9 +8,7 @@
   },
   "dependencies": {
     "express": "^4.17.1",
-    "peer": "^0.5.3",
-    "simple-peer": "^9.7.2",
-    "wrtc": "^0.4.6"
+    "peer": "^0.5.3"
   },
   "engines": {
     "node": "12.x"
