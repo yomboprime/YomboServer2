@@ -53,7 +53,7 @@ function initServer() {
 
 //	connectAudioProcess();
 
-	startServer( 8080/*process.env.PORT*/, function () {
+	network.startServer( 8080/*process.env.PORT*/, function () {
 
 		console.log( "Server started." );
 
