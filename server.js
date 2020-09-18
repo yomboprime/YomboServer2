@@ -4,7 +4,7 @@
 const webrtcserver = require( './server/webrtcserver.js' );
 //const sendToClientsJSON = webrtcserver.sendToClientsJSON;
 //const sendToClientsJSONBinary = webrtcserver.sendToClientsJSONBinary;
-const wrtc = require( 'wrtc' );
+//const wrtc = require( 'wrtc' );
 const Peer = require( 'simple-peer' );
 const fs = require( 'fs' );
 
