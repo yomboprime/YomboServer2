@@ -179,7 +179,7 @@ function initNetwork( password ) {
 	peer = new SimplePeer( {
 		trickle: false,
 		config: {
-			iceServers: [ { urls: 'stun:glitch.com/YomboServer2:8080' } ],
+			iceServers: [ { urls: 'stun:yomboserver2.glitch.me' } ],
 			peerIdentity: password
 
 			/*
