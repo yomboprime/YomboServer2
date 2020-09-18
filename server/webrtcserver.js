@@ -4,6 +4,7 @@ var MAX_URL_LENGTH = 2000;
 if ( typeof module !== undefined ) {
 
 	module.exports = {
+
 		startServer: startServer,
 		//sendToClientsJSON: sendToClientsJSON,
 		//sendToClientsJSONBinary: sendToClientsJSONBinary,
@@ -11,16 +12,22 @@ if ( typeof module !== undefined ) {
 		getClientParameters: getClientParameters,
 		getURLParameters: getURLParameters
 		//getNumClients: getNumClients
+
 	};
 
 }
 
-var express = require( 'express' );
+const express = require( 'express' );
+const ExpressPeerServer = require( 'peer' ).ExpressPeerServer;
+
 //var WebSocket = require( 'ws' );
 //var http = require( 'http' );
+
 var pathJoin = require( 'path' ).join;
 
-var app;//, server, wss;
+var app = null;
+var server = null;
+var peerServer = null;
 
 //var maxNumberOfClients = 10;
 
@@ -61,14 +68,21 @@ function startServer( listenPort, onStarted ) {
 	// Start listening
 	//server.listen( listenPort, onStarted );
 
-	var listener = app.listen( listenPort, function () {
+	server = app.listen( listenPort, function () {
 
-		console.log( "******* YEP " );
-
-		onStarted();
+		onStarted( app, server );
 
 	});
 
+	peerServer = ExpressPeerServer( server, {
+		debug: false,
+		path: '/stunserver',
+		key: process.env.SECRET
+	} );
+
+	app.use('/peer', peerServer);
+
+//	server.listen( listenPort );
 
 }
 

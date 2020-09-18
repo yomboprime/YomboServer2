@@ -1,24 +1,17 @@
 
 // - Requires -
 
-var Peer;
-var wrtc;
-
-var network = require( './server/network.js' );
-//var sendToClientsJSON = network.sendToClientsJSON;
-//var sendToClientsJSONBinary = network.sendToClientsJSONBinary;
-
-var fs = require( 'fs' );
+const webrtcserver = require( './server/webrtcserver.js' );
+//const sendToClientsJSON = webrtcserver.sendToClientsJSON;
+//const sendToClientsJSONBinary = webrtcserver.sendToClientsJSONBinary;
+const wrtc = require( 'wrtc' );
+const Peer = require( 'simple-peer' );
+const fs = require( 'fs' );
 
 
 // - Global variables -
 
 // App
-
-var app = null;
-var httpServer = null;
-//var wss = null;
-var peer = null;
 
 var isAppEnding = false;
 
@@ -49,13 +42,17 @@ function initServer() {
 
 	} );
 
+	if ( ! process.env.SECRET ) process.env.SECRET = "abcd";
+
 //	connectVideoProcess();
 
 //	connectAudioProcess();
 
-	network.startServer( 8080/*process.env.PORT*/, function () {
+	webrtcserver.startServer( 8080/*process.env.PORT*/, function () {
 
 		console.log( "Server started." );
+
+		connectRTC( process.env.SECRET );
 
 	} );
 
@@ -93,14 +90,15 @@ function finish() {
 */
 }
 
-function connectRTC() {
+function connectRTC( password ) {
 
 	// Start peer to send audio stream over WebRTC
 	peer = new Peer( {
 		initiator: true,
 		trickle: false,
 		config: {
-			//iceServers: [ { urls: 'stun:stun.l.google.com:19302' } ],
+			iceServers: [ { urls: 'stun:glitch.com/YomboServer2:8080' } ],
+			peerIdentity: password
 			/*
 			portRange: {
 				min: 8100,
@@ -119,45 +117,70 @@ function connectRTC() {
 
 	} );
 
-	// WebRTC signaling
-// TODO COMENTAR
+	peer.on( 'error', function ( err ) {
+
+		alert( "WebRTC connection Error: " + err );
+
+	} );
+
+	peer.on( 'close', function ( err ) {
+
+		alert( "WebRTC connection Closed." );
+
+	} );
+
+	// TODO comment
 	peer.on( 'signal', function ( signal ) {
 
-		console.log( "**** RTC signal: " + JSON.stringify( signal ) + "************" );
-
-		//client.socket.send( JSON.stringify( signal ), function nop () {} );
+		console.log( "WebRTC signal received: " + signal );
 
 	} );
 
-	peer.on( 'error', function ( error ) {
+	peer.on( 'stream', function ( stream ) {
 
-		console.log( "Error connecting via RTC to client: " + error );
+		console.log( "WebRTC stream received. " );
+
+		/*
+		if ( 'srcObject' in audioElement ) {
+
+			audioElement.srcObject = stream;
+
+		}
+		else {
+
+			audioElement.src = URL.createObjectURL( stream );
+
+		}
+		*/
 
 	} );
 
-	peer.on( 'close', function ( signal ) {
+	peer.on( 'data', function ( data ) {
 
-		peer.destroy();
-		peer = null;
+		if ( data instanceof ArrayBuffer ) {
+
+			// Binary message
+
+			console.log( "WebRTC binary data message received." );
+
+		}
+		else {
+
+			// JSON text message
+
+			console.log( "WebRTC string data message received: " + data );
+
+			//var dataJSON = JSON.parse( data );
+
+		}
 
 	} );
 
-	peer.on( 'data', function ( message) {
-
-		onClientRTCDataMessage( client, message );
-
-	} );
 }
 
 function disconnectRTC() {
 
 	if ( peer ) peer.destroy();
 	peer = null;
-
-}
-
-function onClientRTCDataMessage( client, message ) {
-
-	console.log( "RTC Client Data Message: " + message );
 
 }
