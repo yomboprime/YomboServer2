@@ -36,7 +36,7 @@ function startServer( listenPort, onStarted ) {
 
 	// Create server
 	app = express();
-	server = http.Server( app );
+	//server = http.Server( app );
 
 	//wss = new WebSocket.Server( { server: server } );
 
